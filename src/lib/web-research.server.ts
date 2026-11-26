@@ -443,8 +443,6 @@ export async function answerEngineeringQuestion(params: {
           {
             type: "function",
             name: "fetch_webpage",
-            description:
-              "Fetch a live public webpage when SHIKARI names a specific domain/URL or to inspect its metadata and text.",
             parameters: {
               type: "object",
               properties: {
@@ -462,8 +460,6 @@ export async function answerEngineeringQuestion(params: {
           {
             type: "function",
             name: "show_visual_results",
-            description:
-              "Display rich visual result cards (videos, websites, docs, repos, or code snippets) on SHIKARI's screen while AETHER speaks.",
             parameters: {
               type: "object",
               properties: {
@@ -523,7 +519,6 @@ export async function answerEngineeringQuestion(params: {
 
     let completed: BackendResponse | undefined;
     let incompleteReason: string | undefined;
-    let failedReason: string | undefined;
 
     for await (const event of stream) {
       if (
@@ -536,15 +531,9 @@ export async function answerEngineeringQuestion(params: {
       if (event.type === "response.incomplete") {
         incompleteReason = event.response.incomplete_details?.reason ?? "incomplete";
       }
-      if (event.type === "response.failed") {
-        failedReason = event.response.error?.message ?? "response_failed";
-      }
     }
 
     signal.throwIfAborted();
-    if (failedReason) {
-      throw new Error(`Backend search failed: ${failedReason}`);
-    }
     if (incompleteReason || !completed || completed.status !== "completed") {
       throw new Error(`Backend response did not complete (${incompleteReason ?? completed?.status ?? "missing"})`);
     }
